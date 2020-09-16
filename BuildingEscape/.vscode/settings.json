@@ -1,0 +1,7 @@
+{
+	"files.exclude": {
+		"/Users/wcarolin/Documents/Unreal Projects/LearningUnreal/BuildingEscape/Content": true,
+		"/Users/wcarolin/Documents/Unreal Projects/LearningUnreal/BuildingEscape/.vscode": true,
+		"/Users/wcarolin/Documents/Unreal Projects/LearningUnreal/BuildingEscape/Intermediate": true
+	}
+}
