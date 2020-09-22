@@ -1,8 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
+#include "OpenDoorComponent.h"
 #include "Engine/World.h"
 #include "GameFramework/PlayerController.h"
-#include "OpenDoorComponent.h"
 #include "GameFramework/Actor.h"
 
 // Sets default values for this component's properties
@@ -45,13 +45,21 @@ void UOpenDoorComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 	if(PressurePlate && PressurePlate->IsOverlappingActor(ActorThatOpens))
 	{
 		OpenDoor(DeltaTime);
+		DoorLastOpened = GetWorld()->GetTimeSeconds(); 
 	}
-	
+	else
+	{
+		if(GetWorld()->GetTimeSeconds() - DoorLastOpened > DoorCloseDelay)
+		{
+			CloseDoor(DeltaTime);
+		}		
+	}
+
 }
 
 void UOpenDoorComponent::OpenDoor(float DeltaTime)
 {
-	UE_LOG(LogTemp, Warning, TEXT("...The OpenDoor Yaw is:  %f"), GetOwner()->GetActorRotation().Yaw);
+	//Debug Code UE_LOG(LogTemp, Warning, TEXT("...The OpenDoor Yaw is:  %f"), GetOwner()->GetActorRotation().Yaw);
 	// //float MyFloat = 90.f;  //10 int implicit converts to float  10.0 BigD converts to float.  adding f, no conversion
 	// //Yaw for Open Door Rotation
 	FRotator CurrentRotation = GetOwner()->GetActorRotation();
@@ -64,9 +72,18 @@ void UOpenDoorComponent::OpenDoor(float DeltaTime)
 	//This uses Unreals Interp
 	//Linear   FMath::FInterpConstantTo 
 	//Exponential Interpolation
-	DoorRotation.Yaw = FMath::FInterpTo(CurrentYaw,TargetYaw,DeltaTime,2.5f);
+	DoorRotation.Yaw = FMath::FInterpTo(CurrentYaw,TargetYaw,DeltaTime,4.f);
 	CurrentYaw = DoorRotation.Yaw;
 
 	GetOwner()->SetActorRotation(DoorRotation);
 }
 
+void UOpenDoorComponent::CloseDoor(float DeltaTime)
+{
+	
+	FRotator CurrentRotation = GetOwner()->GetActorRotation();
+	FRotator DoorRotation = GetOwner()->GetActorRotation();	
+	DoorRotation.Yaw = FMath::FInterpTo(CurrentYaw,InitialYaw,DeltaTime,1.f);
+	CurrentYaw = DoorRotation.Yaw;
+	GetOwner()->SetActorRotation(DoorRotation);
+}
