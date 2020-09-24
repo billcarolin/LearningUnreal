@@ -28,12 +28,15 @@ protected:
 private:
 	float Reach = 100.f;
 
+	UPROPERTY()
 	UPhysicsHandleComponent* PhysicsHandle = nullptr;
+	UPROPERTY()
 	UInputComponent* InputComponent = nullptr;
 
 	void CheckDependenciesAreLoaded();
 	void SetupInputComponent();
-	void RayCastDebug(FVector PlayerViewPointLocation, FVector LineTraceEnd);
+	void RayCastDebug(FVector PlayerViewPointLocation, FVector LineTraceEnd) const;
+	FVector CalculatePlayersReach() const;
 	void Grab();
 	void Release();
 		

@@ -5,6 +5,8 @@
 #include "GameFramework/PlayerController.h"
 #include "GameFramework/Actor.h"
 
+#define OUT
+
 // Sets default values for this component's properties
 UOpenDoorComponent::UOpenDoorComponent()
 {
@@ -25,14 +27,11 @@ void UOpenDoorComponent::BeginPlay()
 	//set by Editor - TargetYaw = InitialYaw + 90.f;
 	TargetYaw += InitialYaw;
 
-	if(!PressurePlate)
-	{
-		FString ObjectName = GetOwner()->GetName();	
-		UE_LOG(LogTemp, Error, TEXT("!! The %s object has no Pressure Plate set"), *ObjectName);
-	}
-
 	//works for single player game
 	ActorThatOpens = GetWorld()->GetFirstPlayerController()->GetPawn();
+
+	FindPressurePlateComponent();
+	FindAudioComponent();
 	
 }
 
@@ -76,6 +75,15 @@ void UOpenDoorComponent::OpenDoor(float DeltaTime)
 	CurrentYaw = DoorRotation.Yaw;
 
 	GetOwner()->SetActorRotation(DoorRotation);
+	if(AudioComponent)
+	{
+		if(!IsDoorOpen)
+		{
+			AudioComponent->Play();
+			IsDoorOpen = true;
+		}
+		
+	}	
 }
 
 void UOpenDoorComponent::CloseDoor(float DeltaTime)
@@ -86,4 +94,50 @@ void UOpenDoorComponent::CloseDoor(float DeltaTime)
 	DoorRotation.Yaw = FMath::FInterpTo(CurrentYaw,InitialYaw,DeltaTime,1.f);
 	CurrentYaw = DoorRotation.Yaw;
 	GetOwner()->SetActorRotation(DoorRotation);
+	if(AudioComponent)
+	{
+		if(IsDoorOpen)
+		{
+			AudioComponent->Play();
+			IsDoorOpen = false;
+		}		
+	}
+}
+
+float UOpenDoorComponent::TotalMassOfActors() const
+{
+	float TotalMass = 0.f;
+
+	// Find All Overlapping Actors.
+	TArray<AActor*> OverlappingActors;
+	if(!PressurePlate) {return TotalMass;} //null pointer protection
+	PressurePlate->GetOverlappingActors(OUT OverlappingActors);
+
+	// Add Up Their Masses.
+
+	for(AActor* Actor : OverlappingActors)
+	{
+		TotalMass += Actor->FindComponentByClass<UPrimitiveComponent>()->GetMass();
+		UE_LOG(LogTemp, Warning, TEXT("%s is on the pressureplate!"), *Actor->GetName());
+	}
+
+	return TotalMass;
+}
+
+void UOpenDoorComponent::FindPressurePlateComponent()
+{
+	if(!PressurePlate)
+	{
+		FString ObjectName = GetOwner()->GetName();	
+		UE_LOG(LogTemp, Error, TEXT("!! The %s object has no Pressure Plate set"), *ObjectName);
+	}
+}
+
+void UOpenDoorComponent::FindAudioComponent()
+{	
+	AudioComponent = GetOwner()->FindComponentByClass<UAudioComponent>();
+	if(!AudioComponent)
+	{
+		UE_LOG(LogTemp, Error, TEXT("Audio Component Missing from %s"), *GetOwner()->GetName());
+	}
 }
