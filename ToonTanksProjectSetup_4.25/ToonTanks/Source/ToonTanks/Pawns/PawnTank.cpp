@@ -25,6 +25,15 @@ void APawnTank::HandleDestruction()
 {
     Super::HandleDestruction();
     // Hide Player. TODO - Create new function to handle this. 
+    bIsPlayerAlive = false;
+
+    SetActorHiddenInGame(true);
+    SetActorTickEnabled(false);
+}
+
+bool APawnTank::GetIsPlayerAlive() 
+{
+    return bIsPlayerAlive;
 }
 
 // Called every frame
@@ -64,6 +73,7 @@ void APawnTank::CalculateRotateInput(float Value)
     float RotateAmount = Value * RotateSpeed * GetWorld()->DeltaTimeSeconds;
     FRotator Rotation = FRotator(0, RotateAmount, 0);
     RotationDirection = FQuat(Rotation);
+    UE_LOG(LogTemp, Warning, TEXT("Calculating Rotation..."));
 }
 
 void APawnTank::Move() 

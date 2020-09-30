@@ -9,49 +9,47 @@
 class USpringArmComponent;
 class UCameraComponent;
 
-/**
- * 
- */
 UCLASS()
 class TOONTANKS_API APawnTank : public APawnBase
 {
 	GENERATED_BODY()
 
-	public:
+private:
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
+	USpringArmComponent* SpringArm;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
+	UCameraComponent* Camera; 
 
-		APawnTank();
+	FVector MoveDirection;
+	FQuat RotationDirection;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement", meta = (AllowPrivateAccess = "true"))
+	float MoveSpeed = 100.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement", meta = (AllowPrivateAccess = "true"))	
+	float RotateSpeed = 100.0f;
 
-		// Called every frame
-		virtual void Tick(float DeltaTime) override;
+	APlayerController* PlayerControllerRef;
+	bool bIsPlayerAlive = true;
 
-		// Called to bind functionality to input
-		virtual void SetupPlayerInputComponent(class UInputComponent *PlayerInputComponent) override;
+	void CalculateMoveInput(float Value);
+	void CalculateRotateInput(float Value);
 
-		virtual void HandleDestruction() override; 
+	void Move();
+	void Rotate();
 
-	protected:
-		// Called when the game starts or when spawned
-		virtual void BeginPlay() override;
+public:
 
-	private:
-		UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
-		USpringArmComponent* SpringArm;
-		UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
-		UCameraComponent* Camera; 
+	APawnTank();
 
-		FVector MoveDirection;
-		FQuat RotationDirection;
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
+	// Called to bind functionality to input
+	virtual void SetupPlayerInputComponent(class UInputComponent *PlayerInputComponent) override;
+	virtual void HandleDestruction() override;
 
-		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement", meta = (AllowPrivateAccess = "true"))
-		float MoveSpeed = 100.0f;
-		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement", meta = (AllowPrivateAccess = "true"))	
-		float RotateSpeed = 100.0f;
+	bool GetIsPlayerAlive();
 
-		APlayerController* PlayerControllerRef;
-
-		void CalculateMoveInput(float Value);
-		void CalculateRotateInput(float Value);
-
-		void Move();
-		void Rotate();
+protected:
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
 };

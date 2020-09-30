@@ -11,7 +11,6 @@ APawnBase::APawnBase()
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	/* Component Tree is added through code here instead of in Editor */
 	CapsuleComp = CreateDefaultSubobject<UCapsuleComponent>(TEXT("Capsule Collider"));
 	RootComponent = CapsuleComp;
 
@@ -27,13 +26,11 @@ APawnBase::APawnBase()
 
 void APawnBase::RotateTurret(FVector LookAtTarget) 
 {
-	// Update TurretMesh rotation to face towards the LookAtTarget passed in from Child Classes.
 	FVector LookAtTargetCleaned = FVector(LookAtTarget.X, LookAtTarget.Y, TurretMesh->GetComponentLocation().Z);
 	FVector StartLocation = TurretMesh->GetComponentLocation();
 	
 	FRotator TurretRotation = FVector(LookAtTargetCleaned - StartLocation).Rotation();
 	TurretMesh->SetWorldRotation(TurretRotation);
-
 }
 
 void APawnBase::Fire() 
@@ -47,7 +44,6 @@ void APawnBase::Fire()
 		AProjectileBase* TempProjectile = GetWorld()->SpawnActor<AProjectileBase>(ProjectileClass, SpawnLocation, SpawnRotation);
 		TempProjectile->SetOwner(this);
 	}
-
 }
 
 void APawnBase::HandleDestruction() 
@@ -60,4 +56,3 @@ void APawnBase::HandleDestruction()
 
 	// -- PawnTank - Inform GameMode Player died -> Then Hide() all components && stop movement input.
 }
-

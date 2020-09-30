@@ -6,7 +6,7 @@
 #include "GameFramework/Pawn.h"
 #include "PawnBase.generated.h"
 
-class UCapsuleComponent;  //makes class aware of reference, but no methods called in header
+class UCapsuleComponent;
 class AProjectileBase;
 
 UCLASS()
@@ -14,20 +14,7 @@ class TOONTANKS_API APawnBase : public APawn
 {
 	GENERATED_BODY()
 
-public:
-	// Sets default values for this pawn's properties
-	APawnBase();
-
-	virtual void HandleDestruction();
-
-protected:
-
-	void RotateTurret(FVector LookAtTarget);
-
-	void Fire();
-
-
-private:
+private: 
 	// COMPONENTS
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	UCapsuleComponent* CapsuleComp;
@@ -41,4 +28,14 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Projectile Type", meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<AProjectileBase> ProjectileClass;
 
+public:
+	// Sets default values for this pawn's properties
+	APawnBase();
+	virtual void HandleDestruction();
+
+protected:
+
+	void RotateTurret(FVector LookAtTarget);
+
+	void Fire();
 };
